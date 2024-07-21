@@ -1,4 +1,5 @@
-cmake-build-debug/
+src/cmake-build-debug/
 .idea/
 *.bin
 *.exe
+cmake-build-debug/
