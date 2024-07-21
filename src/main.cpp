@@ -72,7 +72,7 @@ int main() {
     while (true) {
         drawScreen(1);
         sleep(1);
-        system("clear");
+        drawScreen(2);
     }
     return 0;
 }
