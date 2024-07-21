@@ -3,5 +3,8 @@ src/cmake-build-debug/
 *.bin
 *.exe
 *.out
+*.bash
+*.sh
+*.zsh
 cmake-build-debug/
 
