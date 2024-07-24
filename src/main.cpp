@@ -1,5 +1,7 @@
 #include <iostream>
 #include <unistd.h> //Library to use sleep function in loops
+#include <windows.h>
+#include <thread>
 using namespace std;
 
 // ANSI escape codes for colors
@@ -19,6 +21,7 @@ const string EMPTY = " ";
 const string HORIZONTAL = "-";
 const string VERTICAL = "|";
 const string CORNER = "+";
+const int lengthB=80;
 
 // Main array
 string screens[4][HEIGHT][WIDTH];
@@ -66,13 +69,92 @@ void drawScreen(int screen) {
         cout << endl;
     }
 }
+
+void loadingBar() {
+    char x=35;
+    int contador=0;
+    cout<<"CARGANDO"<<endl;
+    do {
+        for(int i=0; i<=contador; i++) {
+            cout<<x;
+        }
+        Sleep(100);
+        contador++;
+
+        if(contador!=50) {
+            system("cls");
+        }
+
+    }while(contador!=50);
+cout<<endl;
+}
+
+void start() {
+    string arr[15]={
+        " ",
+        " ",
+        "             |>   |>   |> ",
+        "             )_)  )_)  )_) ",
+        "            )___))___))___) ",
+        "            )____)____)_____) ",
+        "         _____|____|____|____",
+        "--------{_____________________/-------",
+        "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~",
+        "BBBB AAAA  TTTTTT TTTTTT  LL     EEEEEE SSSSS  HH  HH  IIIIII  PPPPPP",
+        "B  B A  A    TT     TT    LL     EE     SS     HH  HH    II    PP   P",
+        "BBBB AAAA    TT     TT    LL     EEEEE  SSSSS  HHHHHH    II    PPPPP",
+        "B  B A  A    TT     TT    LL     EE        SS  HH  HH    II    PP",
+        "BBB  A  A    TT     TT    LLLLLL EEEEEE SSSSS  HH  HH  IIIIII  PP",
+    };
+    for(int i = 0; i <20; i++) {
+        for(int j = 0; j <90; j++) {
+            if(i == 0 || i == 19 || j == 0 || j == 89) {
+                cout << "*";
+            } else {
+                int posX = i - 4;
+                int posY = j - 14;
+                if(posX >= 0 && posX < 15 && posY >= 0 && posY < arr[posX].size()) {
+                    cout << arr[posX][posY];
+                } else {
+                    cout << " ";
+                }
+            }
+        }
+        cout << endl;
+    }
+}
+
+
+
+
+
+void finish (){
+    cout<<"GGGGGGG    AAAAAA  MM         MM  EEEEE         OOOOOOO V           V  EEEEE RRRRRR      "<<endl;
+    cout<<"GG    GG AA    AA MM  M   M  MM  EE            OO   OO VV         VV  EE    RR   RR   "<<endl;
+    cout<<"GG       AA    AA MM    M    MM  EE            OO   OO  VV       VV   EE    RR   RR "<<endl;
+    cout<<"GG       AAAAAAAA MM         MM  EEEEE         OO   OO   VV     VV    EEEEE RRRRRRR    "<<endl;
+    cout<<"GG   GGG AA    AA MM         MM  EE            OO   OO    VV   VV     EE    RR   RR    "<<endl;
+    cout<<"GG    GG AA    AA MM         MM  EE            OO   OO     VV VV      EE    RR    RR "<<endl;
+    cout<<"GGGGGG   AA    AA MM         MM  EEEEE         OOOOOOO      VVV       EEEEE RR     RR   "<<endl;
+}
+
+string Title(){
+
+
+}
+
 int main() {
     fillScreens();
     drawMargins();
+    start();
+    loadingBar();
+    finish();
     while (true) {
         drawScreen(1);
         sleep(1);
         system("clear");
     }
+
+
     return 0;
 }
