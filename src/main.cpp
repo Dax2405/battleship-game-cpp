@@ -51,8 +51,8 @@ const string MAGENTA = "\033[35m";
 const string CYAN = "\033[36m";
 const string WHITE = "\033[37m";
 
-const int WIDTH = 70;
-const int HEIGHT = 40;
+const int WIDTH = 30;
+const int HEIGHT = 10;
 const int HALF_WIDTH = WIDTH / 2;
 const int HALF_HEIGHT = HEIGHT / 2;
 const int SHIP_SIZE = 5;
@@ -61,6 +61,7 @@ const string EMPTY = " ";
 const string HORIZONTAL = "-";
 const string VERTICAL = "|";
 const string CORNER = "+";
+const string ATTACK = "X";
 
 
 const string SHIP_L_H = GREEN + "\\" + RESET;
@@ -78,6 +79,11 @@ const string SHIP_M_V_R = RED + "|" + RESET;
 string screens[4][HEIGHT][WIDTH];
 //Ships array
 int ships[2][SHIP_QUANTITY][SHIP_SIZE][2];
+// PLayer Structure
+struct Player {
+    string name;
+    int score = 0;
+};
 
 int randomNumber(int min, int max) {
     random_device rd;
@@ -231,7 +237,7 @@ void moveShip(int x, int y, int prevOrientation,  int player, int op, int ship) 
 }
 
 
-void addShips(int player) {
+void addShips(int player, Player playing) {
     int screen;
     if (player == 0) {
         screen = 0;
@@ -239,14 +245,15 @@ void addShips(int player) {
         screen = 2;
     }
     for (int i = 0; i < SHIP_QUANTITY; i++) {
-        int x = randomNumber(1, WIDTH - 1);
-        int y = randomNumber(1, HEIGHT - 1);
+        int x = randomNumber(1, WIDTH - 2);
+        int y = randomNumber(1, HEIGHT - 2);
         int orientation = 0;
         if (verifyAviavility(x, y, player)) {
             int op;
             addShipToScreen(x, y, orientation, player);
             addShipCoordinates(x, y, player, i, orientation);
             drawScreen(screen);
+            cout << MAGENTA << playing.name << RESET << " press enter to confirm the position of the ship"  << endl;
             do {
                 op = readchar();
                 switch (op) {
@@ -279,9 +286,12 @@ void addShips(int player) {
                         system("exit");
                 }
                 drawScreen(screen);
+                cout << MAGENTA << playing.name << RESET << " press enter to confirm the position of the ship"  << endl;
                 sleep(0.5);
                 system("clear");
                 drawScreen(screen);
+                cout << MAGENTA << playing.name << RESET << " press enter to confirm the position of the ship"  << endl;
+
             }while(op != 10);
         } else {
             i--;
@@ -291,15 +301,138 @@ void addShips(int player) {
 
 
 }
+
+void deleteShip(int player, int ship) {
+    int screen;
+    if (player == 0) {
+        screen = 0;
+    }else {
+        screen = 2;
+    }
+    for (int i = 0; i < SHIP_SIZE; i++) {
+        screens[screen][ships[player][ship][i][1]][ships[player][ship][i][0]] = EMPTY;
+    }
+    for (int i = 0; i < SHIP_SIZE; i++) {
+        ships[player][ship][i][0] = 0;
+        ships[player][ship][i][1] = 0;
+    }
+}
+bool attack(int player, Player playing) {
+    int screen;
+    if (player == 0) {
+        screen = 1;
+    }else {
+        screen = 3;
+    }
+    int x = WIDTH/2, y = HEIGHT/2;
+    int op;
+    screens[screen][y][x] = ATTACK;
+    drawScreen(screen);
+    do {
+        op = readchar();
+        switch (op) {
+            case 119:
+                screens[screen][y][x] = EMPTY;
+                y--;
+                screens[screen][y][x] = ATTACK;
+                break;
+            case 115:
+                screens[screen][y][x] = EMPTY;
+                y++;
+                screens[screen][y][x] = ATTACK;
+                break;
+            case 97:
+                screens[screen][y][x] = EMPTY;
+                x--;
+                screens[screen][y][x] = ATTACK;
+                break;
+            case 100:
+                screens[screen][y][x] = EMPTY;
+                x++;
+                screens[screen][y][x] = ATTACK;
+                break;
+            default:
+                system("exit");
+        }
+        drawScreen(screen);
+        cout << MAGENTA << playing.name << RESET << " press enter to confirm the position of the ship"  << endl;
+        sleep(0.5);
+        system("clear");
+        drawScreen(screen);
+        cout << MAGENTA << playing.name << RESET << " press enter to confirm the position of the ship"  << endl;
+
+    }while(op != 10);
+    screens[screen][y][x] = EMPTY;
+    if (player == 0) {
+        for (int i = 0; i < SHIP_QUANTITY; i++) {
+            for (int j = 0; j < SHIP_SIZE; j++) {
+                if (ships[1][i][j][0] == x && ships[1][i][j][1] == y) {
+                    deleteShip(player, i);
+                    return true;
+                }
+            }
+        }
+    }else {
+        for (int i = 0; i < SHIP_QUANTITY; i++) {
+            for (int j = 0; j < SHIP_SIZE; j++) {
+                if (ships[0][i][j][0] == x && ships[0][i][j][1] == y) {
+                    deleteShip(player, i);
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
 int main() {
     fillScreens();
     drawMargins();
-    while (true) {
-        drawScreen(2);
-        addShips(0);
-        sleep(1);
-        system("clear");
-        //addShips(1);
+    Player player1;
+    Player player2;
+    cout << "Welcome to Battleship" << endl;
+    cout << "Press any key to start" << endl;
+    sleep(2);
+    readchar();
+    system("clear");
+    cout << CYAN << "Ingresa el nombre del jugador 1: " << RESET;
+    cin >> player1.name;
+    system("clear");
+    cout << MAGENTA << "Ingresa el nombre del jugador 2: " << RESET;
+    cin >> player2.name;
+    system("clear");
+    cout << CYAN <<"Player 1, place your ships" << RESET <<endl;
+    addShips(0, player1);
+    system("clear");
+    cout << MAGENTA << "Player 2, place your ships" << RESET <<endl;
+    addShips(1, player2);
+    int player = 0;
+    system("clear");
+    do {
+        cout << player1.name << " = " << player1.score <<"     " << player2.name << " = " << player2.score << endl;
+        if(player == 0) {
+            cout << CYAN << player1.name << " turn" << RESET << endl;
+            if (attack(player, player1)) {
+                player1.score++;
+            }
+            drawScreen(2);
+            player = 1;
+        }else {
+            cout << MAGENTA << player2.name << " turn" << RESET << endl;
+            if (attack(player, player2)) {
+                player2.score++;
+            }
+            player = 0;
+        }
+        cout << player1.name << " = " << player1.score <<"     " << player2.name << " = " << player2.score << endl;
+
+
+    }while(player1.score < SHIP_QUANTITY || player2.score < SHIP_QUANTITY);
+    if (player1.score == SHIP_QUANTITY) {
+        cout << CYAN << player1.name << " wins" << RESET << endl;
+    }else {
+        cout << MAGENTA << player2.name << " wins" << RESET << endl;
     }
+
     return 0;
 }
